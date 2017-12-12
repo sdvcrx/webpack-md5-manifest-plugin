@@ -2,15 +2,15 @@ const fs = require('fs')
 const path = require('path')
 const crypto = require('crypto')
 
-function isJsFile (name) {
-  return path.extname(name) === '.js'
-}
-
 class MD5Plugin {
   constructor (options) {
     this.options = Object.assign({}, {
       name: 'manifest.json'
     }, options)
+  }
+
+  _exlcudeSelf (name) {
+    return name !== this.options.name
   }
 
   md5File (filePath) {
@@ -35,7 +35,7 @@ class MD5Plugin {
         if (err) {
           reject(err)
         }
-        resolve(files.filter(isJsFile))
+        resolve(files.filter(this._exlcudeSelf, this))
       })
     })
   }
@@ -46,8 +46,6 @@ class MD5Plugin {
     fileList.forEach((item) => {
       manifest[item.filename] = item.hash
     })
-
-    const self = this
 
     const manifestPath = path.join(outputPath, this.options.name)
 
@@ -69,7 +67,7 @@ class MD5Plugin {
     compiler.plugin('done', function (stats) {
       const dir = stats.compilation.compiler.outputPath
 
-      self.listDirFiles(stats.compilation.compiler.outputPath).then((files) => {
+      self.listDir(stats.compilation.compiler.outputPath).then((files) => {
         return Promise.all(files.map((file) => {
           const filePath = path.join(dir, file)
           return self.md5File(filePath)
