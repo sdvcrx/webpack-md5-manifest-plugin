@@ -4,7 +4,8 @@
   "description": "Generate JSON manifest based on the MD5 of files",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "lint": "eslint index.js",
+    "test": "npm run lint"
   },
   "repository": {
     "type": "git",
@@ -14,8 +15,17 @@
     "webpack",
     "plugin",
     "JSON",
+    "hash",
     "manifest"
   ],
   "author": "sdvcrx",
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "eslint": "^4.13.1",
+    "eslint-config-standard": "^11.0.0-beta.0",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-node": "^5.2.1",
+    "eslint-plugin-promise": "^3.6.0",
+    "eslint-plugin-standard": "^3.0.1"
+  }
 }
