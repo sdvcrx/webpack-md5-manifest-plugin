@@ -5,7 +5,8 @@ const crypto = require('crypto')
 class MD5Plugin {
   constructor (options) {
     this.options = Object.assign({}, {
-      name: 'manifest.json'
+      name: 'manifest.json',
+      algorithm: 'md5'
     }, options)
   }
 
@@ -20,7 +21,7 @@ class MD5Plugin {
           reject(err)
         }
         const filename = path.basename(filePath)
-        const hash = crypto.createHash('md5').update(data).digest('hex')
+        const hash = crypto.createHash(this.options.algorithm).update(data).digest('hex')
         resolve({
           filename,
           hash

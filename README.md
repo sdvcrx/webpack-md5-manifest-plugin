@@ -41,3 +41,11 @@ Type: `String`
 Default: `manifest.json`
 
 The output manifest filename.
+
+### `options.algorithm` ###
+
+Type: `String`
+
+Default: `md5`
+
+The hash algorithm.
