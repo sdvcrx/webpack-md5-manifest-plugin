@@ -50,7 +50,7 @@ class MD5Plugin {
 
     const manifestPath = path.join(outputPath, this.options.name)
 
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), (err) => {
         if (err) {
           reject(err)
@@ -61,8 +61,6 @@ class MD5Plugin {
   }
 
   apply (compiler) {
-    const moduleAssets = {}
-
     const self = this
 
     compiler.plugin('done', function (stats) {
