@@ -50,12 +50,14 @@ class MD5Plugin {
 
     const manifestPath = path.join(outputPath, this.options.name)
 
+    const fileContent = JSON.stringify(manifest, null, 2)
+
     return new Promise((resolve, reject) => {
-      fs.writeFile(manifestPath, JSON.stringify(manifest, null, 2), (err) => {
+      fs.writeFile(manifestPath, fileContent, (err) => {
         if (err) {
           reject(err)
         }
-        resolve()
+        resolve(fileContent)
       })
     })
   }
@@ -63,16 +65,27 @@ class MD5Plugin {
   apply (compiler) {
     const self = this
 
-    compiler.plugin('done', function (stats) {
-      const dir = stats.compilation.compiler.outputPath
+    compiler.plugin('after-emit', function (compilation, compileCallback) {
+      const dir = compilation.compiler.outputPath
 
-      self.listDir(stats.compilation.compiler.outputPath).then((files) => {
+      self.listDir(dir).then((files) => {
         return Promise.all(files.map((file) => {
           const filePath = path.join(dir, file)
           return self.md5File(filePath)
         }))
       }).then((fileList) => {
         return self.outputManifest(fileList, dir)
+      }).then((content) => {
+        compilation.assets[self.options.name] = {
+          source: function () {
+            return content
+          },
+          size: function () {
+            return content.length
+          }
+        }
+
+        compilation.applyPluginsAsync('webpack-md5-manifest-plugin-after-emit', content, compileCallback)
       })
     })
   }
