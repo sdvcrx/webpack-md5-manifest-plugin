@@ -9,23 +9,49 @@ const utils = require('./utils')
 const MD5Plugin = require('../')
 
 describe('MD5Plugin', function () {
-  before(function () {
-    return utils.compile(new MD5Plugin())
+  describe('#md5', function () {
+    before(function () {
+      return utils.compile(new MD5Plugin())
+    })
+
+    after(function () {
+      return utils.cleanup()
+    })
+
+    it('expect generate md5 manifest to manifest.json', () => {
+      return utils.readManifestFile('manifest.json').then((obj) => {
+        return Promise.all(
+          Object.keys(obj).map((filename) => {
+            const hash = obj[filename]
+
+            return utils.getHash(filename).should.eventually.equal(hash)
+          })
+        )
+      })
+    })
   })
 
-  after(function () {
-    return utils.cleanup()
-  })
+  describe('#sha1', function () {
+    before(function () {
+      return utils.compile(new MD5Plugin({
+        algorithm: 'sha1'
+      }))
+    })
 
-  it('expect generate md5 manifest to manifest.json', () => {
-    return utils.readManifestFile('manifest.json').then((obj) => {
-      return Promise.all(
-        Object.keys(obj).map((filename) => {
-          const hash = obj[filename]
+    after(function () {
+      return utils.cleanup()
+    })
 
-          return utils.getHash(filename).should.eventually.equal(hash)
-        })
-      )
+    it('expect generate sha1 manifest to manifest.json', () => {
+      return utils.readManifestFile('manifest.json').then((obj) => {
+        return Promise.all(
+          Object.keys(obj).map((filename) => {
+            const hash = obj[filename]
+
+            return utils.getHash(filename, 'sha1').should.eventually.equal(hash)
+          })
+        )
+      })
     })
   })
 })
