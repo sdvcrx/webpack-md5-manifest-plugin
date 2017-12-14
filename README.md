@@ -3,6 +3,7 @@
 Generate JSON manifest based on the MD5 of files.
 
 [![Build Status](https://travis-ci.org/sdvcrx/webpack-md5-manifest-plugin.svg?branch=master)](https://travis-ci.org/sdvcrx/webpack-md5-manifest-plugin)
+[![npm package](https://img.shields.io/npm/v/webpack-md5-manifest-plugin.svg)](https://www.npmjs.com/package/webpack-md5-manifest-plugin)
 
 ## Usage ##
 
