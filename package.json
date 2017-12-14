@@ -9,7 +9,7 @@
   },
   "repository": {
     "type": "git",
-    "url": ""
+    "url": "https://github.com/sdvcrx/webpack-md5-manifest-plugin.git"
   },
   "keywords": [
     "webpack",
