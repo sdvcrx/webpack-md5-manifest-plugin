@@ -2,6 +2,8 @@
 
 Generate JSON manifest based on the MD5 of files.
 
+[![Build Status](https://travis-ci.org/sdvcrx/webpack-md5-manifest-plugin.svg?branch=master)](https://travis-ci.org/sdvcrx/webpack-md5-manifest-plugin)
+
 ## Usage ##
 
 In your `webpack.config.js`:
