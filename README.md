@@ -22,6 +22,16 @@ module.exports = {
 }
 ```
 
+Output example:
+
+```json
+// dist/manifest.json
+{
+  "app.bundle.js": "20036d7b35b3613aa3c3baf24accc285",
+  "lib.bundle.js": "e92ac4fed9a627c489ffeda66b9f4721"
+}
+```
+
 ## Options ##
 
 ```javascript
