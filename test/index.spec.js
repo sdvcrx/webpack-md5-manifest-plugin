@@ -54,4 +54,28 @@ describe('MD5Plugin', function () {
       })
     })
   })
+
+  describe('#filename', function () {
+    before(function () {
+      return utils.compile(new MD5Plugin({
+        name: 'test.json'
+      }))
+    })
+
+    after(function () {
+      return utils.cleanup()
+    })
+
+    it('expect generate md5 manifest to test.json', () => {
+      return utils.readManifestFile('test.json').then((obj) => {
+        return Promise.all(
+          Object.keys(obj).map((filename) => {
+            const hash = obj[filename]
+
+            return utils.getHash(filename).should.eventually.equal(hash)
+          })
+        )
+      })
+    })
+  })
 })
