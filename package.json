@@ -1,6 +1,6 @@
 {
   "name": "webpack-md5-manifest-plugin",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "Generate JSON manifest based on the MD5 of files",
   "main": "index.js",
   "scripts": {
