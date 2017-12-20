@@ -8,6 +8,8 @@ class MD5Plugin {
       name: 'manifest.json',
       algorithm: 'md5'
     }, options)
+
+    this._outputPath = ''
   }
 
   _exlcudeSelf (name) {
@@ -19,8 +21,9 @@ class MD5Plugin {
       fs.readFile(filePath, 'utf-8', (err, data) => {
         if (err) {
           reject(err)
+          return
         }
-        const filename = path.basename(filePath)
+        const filename = path.relative(this._outputPath, filePath)
         const hash = crypto.createHash(this.options.algorithm).update(data).digest('hex')
         resolve({
           filename,
@@ -35,20 +38,21 @@ class MD5Plugin {
       fs.readdir(dirPath, (err, files) => {
         if (err) {
           reject(err)
+          return
         }
         resolve(files.filter(this._exlcudeSelf, this))
       })
     })
   }
 
-  outputManifest (fileList, outputPath) {
+  outputManifest (fileList) {
     const manifest = {}
 
     fileList.forEach((item) => {
       manifest[item.filename] = item.hash
     })
 
-    const manifestPath = path.join(outputPath, this.options.name)
+    const manifestPath = path.join(this._outputPath, this.options.name)
 
     const fileContent = JSON.stringify(manifest, null, 2)
 
@@ -66,27 +70,27 @@ class MD5Plugin {
     const self = this
 
     compiler.plugin('after-emit', function (compilation, compileCallback) {
-      const dir = compilation.compiler.outputPath
+      self._outputPath = compilation.compiler.outputPath
 
-      self.listDir(dir).then((files) => {
-        return Promise.all(files.map((file) => {
-          const filePath = path.join(dir, file)
-          return self.md5File(filePath)
-        }))
-      }).then((fileList) => {
-        return self.outputManifest(fileList, dir)
-      }).then((content) => {
-        compilation.assets[self.options.name] = {
-          source: function () {
-            return content
-          },
-          size: function () {
-            return content.length
+      const fullPathAssetsPromises = Object.keys(compilation.assets)
+        .map(key => compilation.assets[key])
+        .map(file => file.existsAt)
+        .map(self.md5File, self)
+
+      Promise.all(fullPathAssetsPromises)
+        .then((fileList) => {
+          return self.outputManifest(fileList, this._outputPath)
+        }).then((content) => {
+          compilation.assets[self.options.name] = {
+            source: function () {
+              return content
+            },
+            size: function () {
+              return content.length
+            }
           }
-        }
-
-        compilation.applyPluginsAsync('webpack-md5-manifest-plugin-after-emit', content, compileCallback)
-      })
+          compilation.applyPluginsAsync('webpack-md5-manifest-plugin-after-emit', content, compileCallback)
+        }).catch(console.error)
     })
   }
 }
