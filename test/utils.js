@@ -36,10 +36,8 @@ function readManifestFile (filename) {
   })
 }
 
-function compile (plugin) {
-  const options = Object.assign({}, webpackConfig, {
-    plugins: [plugin]
-  })
+function compile (opts) {
+  const options = Object.assign({}, webpackConfig, opts)
   return new Promise((resolve, reject) => {
     webpack(options, (err, stats) => {
       if (err) {

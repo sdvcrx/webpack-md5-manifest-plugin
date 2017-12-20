@@ -1,5 +1,7 @@
 /* eslint-env mocha */
 /* eslint-disable no-unused-expressions */
+const path = require('path')
+
 const chai = require('chai')
 const chaiAsPromised = require('chai-as-promised')
 chai.use(chaiAsPromised)
@@ -11,7 +13,9 @@ const MD5Plugin = require('../')
 describe('MD5Plugin', function () {
   describe('#md5', function () {
     before(function () {
-      return utils.compile(new MD5Plugin())
+      return utils.compile({
+        plugins: [new MD5Plugin()]
+      })
     })
 
     after(function () {
@@ -33,9 +37,13 @@ describe('MD5Plugin', function () {
 
   describe('#sha1', function () {
     before(function () {
-      return utils.compile(new MD5Plugin({
-        algorithm: 'sha1'
-      }))
+      return utils.compile({
+        plugins: [
+          new MD5Plugin({
+            algorithm: 'sha1'
+          })
+        ]
+      })
     })
 
     after(function () {
@@ -57,9 +65,13 @@ describe('MD5Plugin', function () {
 
   describe('#filename', function () {
     before(function () {
-      return utils.compile(new MD5Plugin({
-        name: 'test.json'
-      }))
+      return utils.compile({
+        plugins: [
+          new MD5Plugin({
+            name: 'test.json'
+          })
+        ]
+      })
     })
 
     after(function () {
@@ -68,6 +80,33 @@ describe('MD5Plugin', function () {
 
     it('expect generate md5 manifest to test.json', () => {
       return utils.readManifestFile('test.json').then((obj) => {
+        return Promise.all(
+          Object.keys(obj).map((filename) => {
+            const hash = obj[filename]
+
+            return utils.getHash(filename).should.eventually.equal(hash)
+          })
+        )
+      })
+    })
+  })
+
+  describe('#multi-level', function () {
+    before(function () {
+      return utils.compile({
+        output: {
+          filename: 'js/[name].bundle.js',
+          path: path.resolve(__dirname, 'dist')
+        }
+      })
+    })
+
+    after(function () {
+      return utils.cleanup()
+    })
+
+    it('expect generate md5 manifest to multi-level', () => {
+      return utils.readManifestFile('manifest.json').then((obj) => {
         return Promise.all(
           Object.keys(obj).map((filename) => {
             const hash = obj[filename]
